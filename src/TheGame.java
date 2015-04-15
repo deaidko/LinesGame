@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class TheGame extends JFrame {
     public TheGame() {
-        super("THE GAME YOU CANT WIN");
+        super("LINES15");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         add(new GamePanel());
         pack();
