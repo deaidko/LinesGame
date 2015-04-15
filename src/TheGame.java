@@ -187,7 +187,13 @@ class GamePanel extends JPanel {
     /*
     public int[][] Check(int Matrix[][], int X, int Y) { // Функция для проверки шаров при вставке
 
-    return Matrix;
+        return Matrix;
+    }
+    */
+    /*
+    public int[][] Path(int Matrix[][], int X, int Y, int X1, int Y1) { // Функция для нахождения пути
+
+        return Matrix;
     }
     */
 }
