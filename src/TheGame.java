@@ -28,7 +28,7 @@ class GamePanel extends JPanel {
     private int Matrix[][] = new int[BoardSize][BoardSize]; // матрица значений
     private int Sel_X, Sel_Y; // координаты выбранного элемента
     private int State = 0; // состояние
-    private int BallCount = 1; // количество выпадающих шаров
+    private int BallCount = 3; // количество выпадающих шаров
     private int InARowCount = 3; // количество шаров в ряд
 
     Random Rnd = new Random();
@@ -84,7 +84,7 @@ class GamePanel extends JPanel {
                         if (Matrix[Cell_X][Cell_Y] == 0) { // если клик на пустую ячейку
                             Matrix[Cell_X][Cell_Y] = Matrix[Sel_X][Sel_Y] - 10; // копируем цвет
                             Matrix[Sel_X][Sel_Y] = 0; // опустошаем предыдущую ячейку
-                            Check(Matrix,Cell_X,Cell_Y,InARowCount,1);
+                            Check(Matrix,Cell_X,Cell_Y,InARowCount,Matrix[Cell_X][Cell_Y]);
                             //Matrix[Sel_X][Sel_Y] = 0; // опустошаем предыдущую ячейку
                             State = 0; // меняем состояние
                             Matrix=AddBalls(Matrix, BallCount);
@@ -173,14 +173,16 @@ class GamePanel extends JPanel {
 
     public int[][] AddBalls(int Matrix[][], int BallsCount) { // заполнение методом Монте-Карло :D
         int x,y; // для хранения случайных координат
-
+        int Color;
         for (int i = 0; i < BallsCount ; i++) {
             for (int j=0; j < 1000; j++) { // пока не поседеет
                 x = Rnd.nextInt(BoardSize);
                 y = Rnd.nextInt(BoardSize);
 
                 if (Matrix[x][y] == 0) { // если нашел пустую
-                    Matrix[x][y] = 1; // рандомный цвет
+                    Color=Rnd.nextInt(7)+1; // рандомный цвет
+                    Matrix[x][y] = Color;
+                    Check(Matrix,x,y,InARowCount,Color);
                     break;
                 }
             }
@@ -190,67 +192,81 @@ class GamePanel extends JPanel {
 
     public int[][] Check(int Matrix[][], int X, int Y, int InARowCount, int BallColor) { // Функция для проверки шаров при вставке
 
-        int CountG=-1;
-        int CountV=-1;
-        int CountD1=-1;
-        int CountD2=-1;
-        int Left=0, Right=0;
-        for(int i=Y;i<BoardSize;i++){   //верх
-            if (Matrix[X][i]==BallColor) CountG++;
-            else { Right=i; break;}
+        int Left=Y, Right=Y;
+        int Up=X, Down=X;
+
+        while(Right<BoardSize && Matrix[X][Right]==BallColor)
+        {
+            Right++;
         }
-        for(int i=Y;i>=0;i--) {   //нижн
-            if (Matrix[X][i]==BallColor) CountG++;
-            else {Left=i; break;}
+        while(Left>=0 && Matrix[X][Left]==BallColor)
+        {
+            Left--;
         }
 
-        if(CountG>=InARowCount){
-            for(int j=Left;j<Right;j++){
-                Matrix[X][j]=0;
+        while(Down<BoardSize && Matrix[Down][Y]==BallColor)
+        {
+            Down++;
+        }
+        while(Up>=0 && Matrix[Up][Y]==BallColor)
+        {
+            Up--;
+        }
+
+        int Ux1=X, Uy1=Y;
+        int Dx1=X, Dy1=Y;
+        while(Ux1>=0 && Uy1 >= 0 && Matrix[Ux1][Uy1]==BallColor){
+            Ux1--;
+            Uy1--;
+
+        }
+
+        while(Dx1<BoardSize && Dy1 <BoardSize && Matrix[Dx1][Dy1]==BallColor){
+            Dx1++;
+            Dy1++;
+
+        }
+
+        int Ux2=X, Uy2=Y;
+        int Dx2=X, Dy2=Y;
+        while(Uy2<BoardSize && Ux2 >= 0 && Matrix[Ux2][Uy2]==BallColor){
+            Uy2++;
+            Ux2--;
+
+        }
+
+        while(Dx2<BoardSize && Dy2 >=0 && Matrix[Dx2][Dy2]==BallColor){
+            Dx2++;
+            Dy2--;
+
+        }
+
+
+        if(Right-Left >=InARowCount+1) { // удаление "-"
+            for (int i=Left+1; i<Right; i++)
+                Matrix[X][i]=0;
+        }
+
+        if(Down-Up >=InARowCount+1) { // удаление "|"
+            for (int i=Up+1; i<Down; i++)
+                Matrix[i][Y]=0;
+        }
+
+        if(Dx2-Ux2>=InARowCount+1){  // удаление "/"
+            for(int i=1; Ux2+i<Dx2;i++){
+                Matrix[Ux2+i][Uy2-i]=0;
             }
         }
 
-        System.out.println("V "+(CountG));
-
-        Left=0;
-        Right=0;
-
-        for(int i=X;i<BoardSize;i++){   // правая
-            if (Matrix[i][Y]==BallColor) CountV++;
-            else {Right=i; break;}
-        }
-        for(int i=X;i>=0 ;i--) {    //левая
-            if (Matrix[i][Y]==BallColor) CountV++;
-            else {Left=i; break;}
-        }
-
-        if(CountV>=InARowCount){
-            for(int j=Left;j<Right;j++){
-                Matrix[j][Y]=0;
+        if(Dx1-Ux1>=InARowCount+1){ // удаление "\"
+            for(int i=1; Ux1+i<Dx1;i++){
+                Matrix[Ux1+i][Uy1+i]=0;
             }
         }
 
-        System.out.println("G "+CountV);
 
-        for(int i=0;i<X && Y+i<BoardSize;i++){ // правый верхний угол
-            if(Matrix[X-i][Y+i]==BallColor) CountD1++;
-        }
-        for(int i=0;i<BoardSize-X && Y-i>0;i++) {//нижний левый угол
-            if(Matrix[X+i][Y-i]==BallColor) CountD1++;
-            else break;
-        }
-  //        System.out.println("D1 "+CountD1);
-
-        for(int i=0;i<X && Y-i>0;i++) {   //верхний левый угол
-            if(Matrix[X-i][Y-i]==BallColor) CountD2++;
-            else break;
-        }
-
-        for(int i=0;i<BoardSize-X && Y+i<BoardSize;i++) {   //нижний правый угол
-            if(Matrix[X+i][Y+i]==BallColor) CountD2++;
-            else break;
-        }
-  //      System.out.println("D2 "+CountD2);
+        System.out.println("U"+Ux1+" "+Uy1);
+        System.out.println("R" +Dx1+" "+Dy1);
 
         return Matrix;
     }
