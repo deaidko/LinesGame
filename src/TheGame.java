@@ -83,6 +83,7 @@ class GamePanel extends JPanel {
                     case 1: // клик при выбранном элементе
                         if (Matrix[Cell_X][Cell_Y] == 0) { // если клик на пустую ячейку
                             Matrix[Cell_X][Cell_Y] = Matrix[Sel_X][Sel_Y] - 10; // копируем цвет
+                            Check(Matrix,Cell_X,Cell_Y,InARowCount,Matrix[Sel_X][Sel_Y]);
                             Matrix[Sel_X][Sel_Y] = 0; // опустошаем предыдущую ячейку
                             State = 0; // меняем состояние
                             Matrix=AddBalls(Matrix, BallCount);
@@ -178,7 +179,7 @@ class GamePanel extends JPanel {
                 y = Rnd.nextInt(BoardSize);
 
                 if (Matrix[x][y] == 0) { // если нашел пустую
-                    Matrix[x][y] = Rnd.nextInt(7)+1; // рандомный цвет
+                    Matrix[x][y] = 1; // рандомный цвет
                     break;
                 }
             }
@@ -186,8 +187,45 @@ class GamePanel extends JPanel {
         return Matrix;
     }
 
-    public int[][] Check(int Matrix[][], int X, int Y, int InARowCount) { // Функция для проверки шаров при вставке
-        
+    public int[][] Check(int Matrix[][], int X, int Y, int InARowCount, int BallColor) { // Функция для проверки шаров при вставке
+        int CountG=0;
+        int CountV=0;
+        int CountD1=0;
+        int CountD2=0;
+        for(int i=Y;i<BoardSize;i++){   //правая
+            if (Matrix[X][i]==BallColor) CountG++;
+        }
+        for(int i=Y;i>0;i--) {   //левая
+            if (Matrix[X][i]==BallColor) CountG++;
+        }
+        System.out.println(CountG);
+
+
+        for(int i=X;i<BoardSize;i++){   // нижняя
+            if (Matrix[i][Y]==BallColor) CountV++;
+        }
+        for(int i=X;i>0;i--) {    //верхняя
+            if (Matrix[i][Y]==BallColor) CountV++;
+        }
+        System.out.println(CountV);
+
+        for(int i=0;i<X && Y+i<BoardSize;i++){ // правый верхний угол
+            if(Matrix[X-i][Y+i]==BallColor) CountD1++;
+        }
+        for(int i=0;i<BoardSize-X && Y-i>0;i++) {//нижний левый угол
+            if(Matrix[X+i][Y-i]==BallColor) CountD1++;
+        }
+        System.out.println(CountD1);
+
+        for(int i=0;i<X && Y-i>0;i++) {   //верхний левый угол
+            if(Matrix[X-i][Y-i]==BallColor) CountD2++;
+        }
+
+        for(int i=0;i<BoardSize-X && Y+i<BoardSize;i++) {   //нижний правый угол
+            if(Matrix[X+i][Y+i]==BallColor) CountD2++;
+        }
+        System.out.println(CountD2);
+
         return Matrix;
     }
 
