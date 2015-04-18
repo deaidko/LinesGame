@@ -20,7 +20,7 @@ public class TheGame extends JFrame {
 }
 
 class GamePanel extends JPanel {
-    private int BoardSize = 10;
+    private int BoardSize = 9;
     private int WindowSize = 700; // размер окна
     private int Offset = 5; // отступ от края окна
     private int CellSize = (WindowSize - 2*Offset) / BoardSize;
@@ -29,6 +29,7 @@ class GamePanel extends JPanel {
     private int Sel_X, Sel_Y; // координаты выбранного элемента
     private int State = 0; // состояние
     private int BallCount = 3; // количество выпадающих шаров
+    private int InARowCount = 3; // количество шаров в ряд
 
     Random Rnd = new Random();
 
@@ -184,12 +185,12 @@ class GamePanel extends JPanel {
         }
         return Matrix;
     }
-    /*
-    public int[][] Check(int Matrix[][], int X, int Y) { // Функция для проверки шаров при вставке
 
+    public int[][] Check(int Matrix[][], int X, int Y, int InARowCount) { // Функция для проверки шаров при вставке
+        
         return Matrix;
     }
-    */
+
     /*
     public int[][] Path(int Matrix[][], int X, int Y, int X1, int Y1) { // Функция для нахождения пути
 
