@@ -16,7 +16,7 @@ public class GamePanel extends JPanel {
     private int Score = 0; // счёт
     private int BallCount = 3; // количество выпадающих шаров
     public int InARowCount = 5; // количество шаров в ряд
-
+    public int Ball[]=new int[BallCount];
     //This gives you the first Window Object that contains the panel component
     Random Rnd = new Random();
 
@@ -40,7 +40,9 @@ public class GamePanel extends JPanel {
         pnk1 = getToolkit().getImage("img/pnk1.png");
         lbl1 = getToolkit().getImage("img/lbl1.png");
         drd1 = getToolkit().getImage("img/drd1.png");
-
+        for (int i = 0; i < BallCount; i++) {
+            Ball[i]=Rnd.nextInt(7)+1;
+        }
         CleanBoard();
 
         addMouseListener(new MouseAdapter() {
@@ -67,7 +69,7 @@ public class GamePanel extends JPanel {
                                 Matrix[Sel_X][Sel_Y] = 0; // опустошаем предыдущую ячейку
                                 Check(Matrix[Cell_X][Cell_Y]);
                                 if (State != 2) // если нет удалений
-                                    AddBalls(BallCount); // добавляем шары
+                                    AddBalls(); // добавляем шары
                                 State = 0; // меняем состояние
                             }
                         } else { // клик на непустую ячейку (меняем выбираемый элемент)
@@ -153,16 +155,18 @@ public class GamePanel extends JPanel {
         }
     }
 
-    void AddBalls(int BallsCount) { // заполнение методом Монте-Карло :D
+    void AddBalls() { // заполнение методом Монте-Карло :D
         int Color;
         int Added=0;
-        for (int i = 0; i < BallsCount; i++) {
+
+        for (int i = 0; i < BallCount; i++) {
             for (int j = 0; j < 1000; j++) { // пока не поседеет
                 Cell_X = Rnd.nextInt(BoardSize);
                 Cell_Y = Rnd.nextInt(BoardSize);
 
                 if (Matrix[Cell_X][Cell_Y] == 0) { // если нашел пустую
-                    Color = Rnd.nextInt(7) + 1; // рандомный цвет
+        //            Color = Rnd.nextInt(7) + 1; // рандомный цвет
+                    Color=Ball[Added];
                     Matrix[Cell_X][Cell_Y] = Color;
                     Added++;
                     Check(Color);
@@ -170,7 +174,13 @@ public class GamePanel extends JPanel {
                 }
             }
         }
-        if (Added<BallsCount){
+
+        for (int i = 0; i < BallCount; i++) {
+            Ball[i]=Rnd.nextInt(7)+1;
+            System.out.println(Ball[i]);
+        }
+
+        if (Added<BallCount){
             CleanBoard();
         }
         Added=0;
@@ -304,6 +314,6 @@ public class GamePanel extends JPanel {
         }
         State=0;
         Score=0;
-        AddBalls(BallCount);
+        AddBalls();
     }
 }
