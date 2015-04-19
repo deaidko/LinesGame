@@ -17,7 +17,8 @@ public class GamePanel extends JPanel {
     private int BallCount = 3; // количество выпадающих шаров
     public int InARowCount = 5; // количество шаров в ряд
     public int Ball[]=new int[BallCount];
-    //This gives you the first Window Object that contains the panel component
+    public int IconSize = 25;
+
     Random Rnd = new Random();
 
     private Image nul, red, blu, yel, grn, pnk, lbl, drd, drd1, red1, blu1, grn1, yel1, pnk1, lbl1;
@@ -99,7 +100,6 @@ public class GamePanel extends JPanel {
         DrawMatrix(g);
         g.setFont(new Font("Noto Sans", Font.PLAIN, 15));
         g.drawString("Счёт - " + Score, 2 * Offset, WindowSize + 10);
-
     }
 
     public void DrawMatrix(Graphics g) {
@@ -156,29 +156,26 @@ public class GamePanel extends JPanel {
         }
         for (int i = 0; i < BallCount; i++) {
             switch (Ball[i]) {
-                case 0:
-                    g.drawImage(nul, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
-                    break;
                 case 1:
-                    g.drawImage(red, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    g.drawImage(red, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
                     break;
                 case 2:
-                    g.drawImage(grn, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    g.drawImage(grn, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
                     break;
                 case 3:
-                    g.drawImage(blu, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    g.drawImage(blu, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
                     break;
                 case 4:
-                    g.drawImage(yel, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    g.drawImage(yel, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
                     break;
                 case 5:
-                    g.drawImage(pnk, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    g.drawImage(pnk, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
                     break;
                 case 6:
-                    g.drawImage(lbl, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    g.drawImage(lbl, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
                     break;
                 case 7:
-                    g.drawImage(drd, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    g.drawImage(drd, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
                     break;
             }
         }
@@ -206,7 +203,6 @@ public class GamePanel extends JPanel {
 
         for (int i = 0; i < BallCount; i++) {
             Ball[i]=Rnd.nextInt(7)+1;
-            System.out.println(Ball[i]);
         }
 
         if (Added<BallCount){
@@ -219,8 +215,10 @@ public class GamePanel extends JPanel {
                     Added++;
             }
         }
-        if (Added==0)
+        if (Added==0) {
+            JOptionPane.showMessageDialog(null, "Молодец! Ваш счёт " + Score + " очков!", "Игра окончена", JOptionPane.INFORMATION_MESSAGE);
             CleanBoard();
+        }
     }
 
     void Check(int BallColor) { // Функция для проверки шаров при вставке
