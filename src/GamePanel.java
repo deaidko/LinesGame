@@ -16,7 +16,7 @@ public class GamePanel extends JPanel {
     private int Score = 0; // счёт
     private int BallCount = 3; // количество выпадающих шаров
     public int InARowCount = 5; // количество шаров в ряд
-    public int Ball[]=new int[BallCount];
+    public int Ball[] = new int[BallCount];
     public int IconSize = 25;
 
     Random Rnd = new Random();
@@ -42,7 +42,7 @@ public class GamePanel extends JPanel {
         lbl1 = getToolkit().getImage("img/lbl1.png");
         drd1 = getToolkit().getImage("img/drd1.png");
         for (int i = 0; i < BallCount; i++) {
-            Ball[i]=Rnd.nextInt(7)+1;
+            Ball[i] = Rnd.nextInt(7) + 1;
         }
         CleanBoard();
 
@@ -51,41 +51,41 @@ public class GamePanel extends JPanel {
                 Cell_X = (e.getX() - Offset) / CellSize;
                 Cell_Y = (e.getY() - Offset) / CellSize;
                 if (Cell_X < BoardSize && Cell_Y < BoardSize) // если клик в пределах матрицы
-                switch (State) {
-                    case 0: // клик без выбранного элемента
-                        if (Matrix[Cell_X][Cell_Y] < 10) { // если элемент уже не выбран
-                            if (Matrix[Cell_X][Cell_Y] > 0) { // если элемент не пустой
-                                Sel_X = Cell_X; // запоминаем координаты
-                                Sel_Y = Cell_Y;
-                                Matrix[Cell_X][Cell_Y] += 10; // выделяем его
-                                State = 1; // меняем состояние
+                    switch (State) {
+                        case 0: // клик без выбранного элемента
+                            if (Matrix[Cell_X][Cell_Y] < 10) { // если элемент уже не выбран
+                                if (Matrix[Cell_X][Cell_Y] > 0) { // если элемент не пустой
+                                    Sel_X = Cell_X; // запоминаем координаты
+                                    Sel_Y = Cell_Y;
+                                    Matrix[Cell_X][Cell_Y] += 10; // выделяем его
+                                    State = 1; // меняем состояние
+                                }
                             }
-                        }
-                        break;
+                            break;
 
-                    case 1: // клик при выбранном элементе
-                        if (Matrix[Cell_X][Cell_Y] == 0) { // если клик на пустую ячейку
-                            if (PathExists(Sel_X,Sel_Y,Cell_X,Cell_Y)) {
-                                Matrix[Cell_X][Cell_Y] = Matrix[Sel_X][Sel_Y] - 10; // копируем цвет
-                                Matrix[Sel_X][Sel_Y] = 0; // опустошаем предыдущую ячейку
-                                Check(Matrix[Cell_X][Cell_Y]);
-                                if (State != 2) // если нет удалений
-                                    AddBalls(); // добавляем шары
-                                State = 0; // меняем состояние
+                        case 1: // клик при выбранном элементе
+                            if (Matrix[Cell_X][Cell_Y] == 0) { // если клик на пустую ячейку
+                                if (PathExists(Sel_X, Sel_Y, Cell_X, Cell_Y)) {
+                                    Matrix[Cell_X][Cell_Y] = Matrix[Sel_X][Sel_Y] - 10; // копируем цвет
+                                    Matrix[Sel_X][Sel_Y] = 0; // опустошаем предыдущую ячейку
+                                    Check(Matrix[Cell_X][Cell_Y]);
+                                    if (State != 2) // если нет удалений
+                                        AddBalls(); // добавляем шары
+                                    State = 0; // меняем состояние
+                                }
+                            } else { // клик на непустую ячейку (меняем выбираемый элемент)
+                                if (Sel_X == Cell_X && Sel_Y == Cell_Y) {// Если клик на ту же ячейку
+                                    Matrix[Sel_X][Sel_Y] -= 10; // убираем пометку "выбрано"
+                                    State = 0; // Меняем состояние
+                                } else {
+                                    Matrix[Sel_X][Sel_Y] -= 10; // убираем пометку "выбрано" у одного
+                                    Sel_X = Cell_X; // запоминаем
+                                    Sel_Y = Cell_Y;
+                                    Matrix[Sel_X][Sel_Y] += 10; // и ставим пометку "выбрано"
+                                }
                             }
-                        } else { // клик на непустую ячейку (меняем выбираемый элемент)
-                            if (Sel_X == Cell_X && Sel_Y == Cell_Y) {// Если клик на ту же ячейку
-                                Matrix[Sel_X][Sel_Y] -= 10; // убираем пометку "выбрано"
-                                State = 0; // Меняем состояние
-                            } else {
-                                Matrix[Sel_X][Sel_Y] -= 10; // убираем пометку "выбрано" у одного
-                                Sel_X = Cell_X; // запоминаем
-                                Sel_Y = Cell_Y;
-                                Matrix[Sel_X][Sel_Y] += 10; // и ставим пометку "выбрано"
-                            }
-                        }
-                        break;
-                }
+                            break;
+                    }
                 repaint(); // перерисовываем
             }
         });
@@ -157,25 +157,25 @@ public class GamePanel extends JPanel {
         for (int i = 0; i < BallCount; i++) {
             switch (Ball[i]) {
                 case 1:
-                    g.drawImage(red, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
+                    g.drawImage(red, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
                     break;
                 case 2:
-                    g.drawImage(grn, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
+                    g.drawImage(grn, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
                     break;
                 case 3:
                     g.drawImage(blu, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
                     break;
                 case 4:
-                    g.drawImage(yel, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
+                    g.drawImage(yel, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
                     break;
                 case 5:
-                    g.drawImage(pnk, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
+                    g.drawImage(pnk, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
                     break;
                 case 6:
-                    g.drawImage(lbl, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
+                    g.drawImage(lbl, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
                     break;
                 case 7:
-                    g.drawImage(drd, WindowSize-35-i*IconSize, getHeight()-IconSize-3, IconSize, IconSize, this);
+                    g.drawImage(drd, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
                     break;
             }
         }
@@ -183,7 +183,7 @@ public class GamePanel extends JPanel {
 
     void AddBalls() { // заполнение методом Монте-Карло :D
         int Color;
-        int Added=0;
+        int Added = 0;
 
         for (int i = 0; i < BallCount; i++) {
             for (int j = 0; j < 1000; j++) { // пока не поседеет
@@ -191,8 +191,8 @@ public class GamePanel extends JPanel {
                 Cell_Y = Rnd.nextInt(BoardSize);
 
                 if (Matrix[Cell_X][Cell_Y] == 0) { // если нашел пустую
-        //            Color = Rnd.nextInt(7) + 1; // рандомный цвет
-                    Color=Ball[Added];
+                    //            Color = Rnd.nextInt(7) + 1; // рандомный цвет
+                    Color = Ball[Added];
                     Matrix[Cell_X][Cell_Y] = Color;
                     Added++;
                     Check(Color);
@@ -202,20 +202,20 @@ public class GamePanel extends JPanel {
         }
 
         for (int i = 0; i < BallCount; i++) {
-            Ball[i]=Rnd.nextInt(7)+1;
+            Ball[i] = Rnd.nextInt(7) + 1;
         }
 
-        if (Added<BallCount){
+        if (Added < BallCount) {
             CleanBoard();
         }
-        Added=0;
+        Added = 0;
         for (int i = 0; i < BoardSize; i++) {
             for (int j = 0; j < BoardSize; j++) {
-                if (Matrix[i][j]==0)
+                if (Matrix[i][j] == 0)
                     Added++;
             }
         }
-        if (Added==0) {
+        if (Added == 0) {
             JOptionPane.showMessageDialog(null, "Молодец! Ваш счёт " + Score + " очков!", "Игра окончена", JOptionPane.INFORMATION_MESSAGE);
             CleanBoard();
         }
@@ -255,31 +255,32 @@ public class GamePanel extends JPanel {
         /* Удаление элементов */
         if (Rgt - Lft >= InARowCount + 1) { // удаление "-"
             State = 2;
-            Score+=(Rgt - Lft-1)*5;
+            Score += (Rgt - Lft - 1) * 5;
             for (int i = Lft + 1; i < Rgt; i++)
                 Matrix[Cell_X][i] = 0;
         }
         if (Dwn - Up >= InARowCount + 1) {    // удаление "|"
             State = 2;
-            Score+=(Dwn - Up-1)*5;
+            Score += (Dwn - Up - 1) * 5;
             for (int i = Up + 1; i < Dwn; i++)
                 Matrix[i][Cell_Y] = 0;
         }
         if (Dx2 - Ux2 >= InARowCount + 1) {    // удаление "/"
             State = 2;
-            Score+=(Dx2 - Ux2-1)*5;
+            Score += (Dx2 - Ux2 - 1) * 5;
             for (int i = 1; Ux2 + i < Dx2; i++) {
                 Matrix[Ux2 + i][Uy2 - i] = 0;
             }
         }
         if (Dx1 - Ux1 >= InARowCount + 1) {    // удаление "\"
             State = 2;
-            Score+=(Dx1 - Ux1-1)*5;
+            Score += (Dx1 - Ux1 - 1) * 5;
             for (int i = 1; Ux1 + i < Dx1; i++) {
                 Matrix[Ux1 + i][Uy1 + i] = 0;
             }
         }
     }
+
     public boolean PathExists(int xs, int ys, int xe, int ye) {
         int NewMatrix[][] = new int[BoardSize + 2][BoardSize + 2];
         for (int i = 0; i < BoardSize + 2; i++) {
@@ -289,40 +290,35 @@ public class GamePanel extends JPanel {
                 } else NewMatrix[i][j] = 1;
             }
         }
-        int cur=-1;
-        int near=1;
+        int cur = -1;
+        int near = 1;
 
-        NewMatrix[xs+1][ys+1]=cur;
-        NewMatrix[xe+1][ye+1]=0;
+        NewMatrix[xs + 1][ys + 1] = cur;
+        NewMatrix[xe + 1][ye + 1] = 0;
 
-        while (near!=0) {
-            near=0;
+        while (near != 0) {
+            near = 0;
             for (int i = 1; i < BoardSize + 1; i++) {
                 for (int j = 1; j < BoardSize + 1; j++) {
-                    if (NewMatrix[i][j] == cur)
-                    {
-                        if (NewMatrix[i+1][j]==0)
-                        {
-                            if (i+1==xe+1 && j==ye+1) return true;
-                            NewMatrix[i+1][j] = cur-1;
+                    if (NewMatrix[i][j] == cur) {
+                        if (NewMatrix[i + 1][j] == 0) {
+                            if (i + 1 == xe + 1 && j == ye + 1) return true;
+                            NewMatrix[i + 1][j] = cur - 1;
                             near++;
                         }
-                        if (NewMatrix[i][j+1]==0)
-                        {
-                            if (i==xe+1 && j+1==ye+1) return true;
-                            NewMatrix[i][j+1] = cur-1;
+                        if (NewMatrix[i][j + 1] == 0) {
+                            if (i == xe + 1 && j + 1 == ye + 1) return true;
+                            NewMatrix[i][j + 1] = cur - 1;
                             near++;
                         }
-                        if (NewMatrix[i-1][j]==0)
-                        {
-                            if (i-1==xe+1 && j==ye+1) return true;
-                            NewMatrix[i-1][j] = cur-1;
+                        if (NewMatrix[i - 1][j] == 0) {
+                            if (i - 1 == xe + 1 && j == ye + 1) return true;
+                            NewMatrix[i - 1][j] = cur - 1;
                             near++;
                         }
-                        if (NewMatrix[i][j-1]==0)
-                        {
-                            if (i==xe+1 && j-1==ye+1) return true;
-                            NewMatrix[i][j-1] = cur-1;
+                        if (NewMatrix[i][j - 1] == 0) {
+                            if (i == xe + 1 && j - 1 == ye + 1) return true;
+                            NewMatrix[i][j - 1] = cur - 1;
                             near++;
                         }
                     }
@@ -333,15 +329,14 @@ public class GamePanel extends JPanel {
         return false;
     }
 
-    public void CleanBoard()
-    {
+    public void CleanBoard() {
         for (int i = 0; i < BoardSize; i++) {
             for (int k = 0; k < BoardSize; k++) {
                 Matrix[i][k] = 0;
             }
         }
-        State=0;
-        Score=0;
+        State = 0;
+        Score = 0;
         AddBalls();
     }
 }
