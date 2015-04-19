@@ -99,6 +99,7 @@ public class GamePanel extends JPanel {
         DrawMatrix(g);
         g.setFont(new Font("Noto Sans", Font.PLAIN, 15));
         g.drawString("Счёт - " + Score, 2 * Offset, WindowSize + 10);
+
     }
 
     public void DrawMatrix(Graphics g) {
@@ -151,6 +152,34 @@ public class GamePanel extends JPanel {
                         g.drawImage(drd1, Offset + CellSize * i, Offset + CellSize * k, CellSize, CellSize, this);
                         break;
                 }
+            }
+        }
+        for (int i = 0; i < BallCount; i++) {
+            switch (Ball[i]) {
+                case 0:
+                    g.drawImage(nul, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    break;
+                case 1:
+                    g.drawImage(red, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    break;
+                case 2:
+                    g.drawImage(grn, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    break;
+                case 3:
+                    g.drawImage(blu, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    break;
+                case 4:
+                    g.drawImage(yel, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    break;
+                case 5:
+                    g.drawImage(pnk, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    break;
+                case 6:
+                    g.drawImage(lbl, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    break;
+                case 7:
+                    g.drawImage(drd, WindowSize-30-i*20, WindowSize-Offset, 20, 20, this);
+                    break;
             }
         }
     }
@@ -305,6 +334,7 @@ public class GamePanel extends JPanel {
         }
         return false;
     }
+
     public void CleanBoard()
     {
         for (int i = 0; i < BoardSize; i++) {
