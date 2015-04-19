@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 import java.util.Random;
 
 public class GamePanel extends JPanel {
-    private int BoardSize = 16; // размер доски
+    private int BoardSize = 9; // размер доски
     private int WindowSize = 500; // размер окна
     private int Offset = 5; // отступ от края окна
     private int CellSize = (WindowSize - 2 * Offset) / BoardSize;
@@ -13,6 +13,7 @@ public class GamePanel extends JPanel {
     private int Matrix[][] = new int[BoardSize][BoardSize]; // матрица значений
     private int Sel_X, Sel_Y; // координаты выбранного элемента
     private int State = 0; // состояние
+    private int Score = 0; // счёт
     private int BallCount = 3; // количество выпадающих шаров
     public int InARowCount = 5; // количество шаров в ряд
 
@@ -91,12 +92,14 @@ public class GamePanel extends JPanel {
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(WindowSize, WindowSize);
+        return new Dimension(WindowSize, WindowSize + 20);
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         DrawMatrix(g);
+        g.setFont(new Font("Noto Sans",Font.PLAIN, 15));
+        g.drawString("СЧЁТ = " + Score, 2 * Offset, WindowSize + 8);
     }
 
     public void DrawMatrix(Graphics g) {
@@ -204,22 +207,26 @@ public class GamePanel extends JPanel {
         /* Удаление элементов */
         if (Rgt - Lft >= InARowCount + 1) { // удаление "-"
             State = 2;
+            Score+=(Rgt - Lft-1)*5;
             for (int i = Lft + 1; i < Rgt; i++)
                 Matrix[Cell_X][i] = 0;
         }
         if (Dwn - Up >= InARowCount + 1) {    // удаление "|"
             State = 2;
+            Score+=(Dwn - Up-1)*5;
             for (int i = Up + 1; i < Dwn; i++)
                 Matrix[i][Cell_Y] = 0;
         }
         if (Dx2 - Ux2 >= InARowCount + 1) {    // удаление "/"
             State = 2;
+            Score+=(Dx2 - Ux2-1)*5;
             for (int i = 1; Ux2 + i < Dx2; i++) {
                 Matrix[Ux2 + i][Uy2 - i] = 0;
             }
         }
         if (Dx1 - Ux1 >= InARowCount + 1) {    // удаление "\"
             State = 2;
+            Score+=(Dx1 - Ux1-1)*5;
             for (int i = 1; Ux1 + i < Dx1; i++) {
                 Matrix[Ux1 + i][Uy1 + i] = 0;
             }
