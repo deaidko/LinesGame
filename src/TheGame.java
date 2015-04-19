@@ -84,8 +84,8 @@ class GamePanel extends JPanel {
                             Matrix[Cell_X][Cell_Y] = Matrix[Sel_X][Sel_Y] - 10; // копируем цвет
                             Matrix[Sel_X][Sel_Y] = 0; // опустошаем предыдущую ячейку
                             Check(Matrix[Cell_X][Cell_Y]);
-                            if (State!=3)
-                            AddBalls(BallCount);
+                            if (State!=2) // если нет удалений
+                                AddBalls(BallCount); // добавляем шары
                             State = 0; // меняем состояние
                         } else { // клик на непустую ячейку (меняем выбираемый элемент)
                             if (Sel_X == Cell_X && Sel_Y == Cell_Y) {// Если клик на ту же ячейку
@@ -216,29 +216,25 @@ class GamePanel extends JPanel {
             Dy2--;
         }
 
-        Delete(Rgt,Lft,Dwn,Up,Dx1,Dx2,Ux1,Ux2,Uy2,Uy1);
-    }
-
-    void Delete(int Rgt, int Lft, int Dwn, int Up, int Dx1, int Dx2, int Ux1, int Ux2, int Uy2, int Uy1){
         /* Удаление элементов */
         if (Rgt - Lft >= InARowCount + 1) { // удаление "-"
-            State = 3;
+            State = 2;
             for (int i = Lft + 1; i < Rgt; i++)
                 Matrix[Cell_X][i] = 0;
         }
         if (Dwn - Up >= InARowCount + 1) {    // удаление "|"
-            State = 3;
+            State = 2;
             for (int i = Up + 1; i < Dwn; i++)
                 Matrix[i][Cell_Y] = 0;
         }
         if (Dx2 - Ux2 >= InARowCount + 1) {    // удаление "/"
-            State = 3;
+            State = 2;
             for (int i = 1; Ux2 + i < Dx2; i++) {
                 Matrix[Ux2 + i][Uy2 - i] = 0;
             }
         }
         if (Dx1 - Ux1 >= InARowCount + 1) {    // удаление "\"
-            State = 3;
+            State = 2;
             for (int i = 1; Ux1 + i < Dx1; i++) {
                 Matrix[Ux1 + i][Uy1 + i] = 0;
             }
