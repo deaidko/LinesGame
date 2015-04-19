@@ -13,7 +13,7 @@ public class TheGame extends JFrame {
     }
 
     public static void main(String[] args) {
-        TheGame app=new TheGame();
+        TheGame app = new TheGame();
         app.setVisible(true);
         app.setResizable(false);
     }
@@ -23,13 +23,13 @@ class GamePanel extends JPanel {
     private int BoardSize = 9;
     private int WindowSize = 700; // размер окна
     private int Offset = 5; // отступ от края окна
-    private int CellSize = (WindowSize - 2*Offset) / BoardSize;
+    private int CellSize = (WindowSize - 2 * Offset) / BoardSize;
     private int Cell_X, Cell_Y; // номера клеток
     private int Matrix[][] = new int[BoardSize][BoardSize]; // матрица значений
     private int Sel_X, Sel_Y; // координаты выбранного элемента
     private int State = 0; // состояние
     private int BallCount = 3; // количество выпадающих шаров
-    private int InARowCount = 3; // количество шаров в ряд
+    private int InARowCount = 5; // количество шаров в ряд
 
     Random Rnd = new Random();
 
@@ -67,14 +67,13 @@ class GamePanel extends JPanel {
                 Cell_X = (e.getX() - Offset) / CellSize;
                 Cell_Y = (e.getY() - Offset) / CellSize;
 
-                switch (State)
-                {
+                switch (State) {
                     case 0: // клик без выбранного элемента
                         if (Matrix[Cell_X][Cell_Y] < 10) { // если элемент уже не выбран
                             if (Matrix[Cell_X][Cell_Y] > 0) { // если элемент не пустой
                                 Sel_X = Cell_X; // запоминаем координаты
                                 Sel_Y = Cell_Y;
-                                Matrix[Cell_X][Cell_Y] +=10; // выделяем его
+                                Matrix[Cell_X][Cell_Y] += 10; // выделяем его
                                 State = 1; // меняем состояние
                             }
                         }
@@ -84,17 +83,14 @@ class GamePanel extends JPanel {
                         if (Matrix[Cell_X][Cell_Y] == 0) { // если клик на пустую ячейку
                             Matrix[Cell_X][Cell_Y] = Matrix[Sel_X][Sel_Y] - 10; // копируем цвет
                             Matrix[Sel_X][Sel_Y] = 0; // опустошаем предыдущую ячейку
-                            Check(Matrix,Cell_X,Cell_Y,InARowCount,Matrix[Cell_X][Cell_Y]);
-                            //Matrix[Sel_X][Sel_Y] = 0; // опустошаем предыдущую ячейку
+                            Check(Matrix, Cell_X, Cell_Y, InARowCount, Matrix[Cell_X][Cell_Y]);
                             State = 0; // меняем состояние
-                            Matrix=AddBalls(Matrix, BallCount);
-                        }
-                        else { // клик на непустую ячейку (меняем выбираемый элемент)
-                            if (Sel_X==Cell_X && Sel_Y==Cell_Y) {// Если клик на ту же ячейку
+                            Matrix = AddBalls(Matrix, BallCount);
+                        } else { // клик на непустую ячейку (меняем выбираемый элемент)
+                            if (Sel_X == Cell_X && Sel_Y == Cell_Y) {// Если клик на ту же ячейку
                                 Matrix[Sel_X][Sel_Y] -= 10; // убираем пометку "выбрано"
-                                State=0; // Меняем состояние
-                            }
-                            else {
+                                State = 0; // Меняем состояние
+                            } else {
                                 Matrix[Sel_X][Sel_Y] -= 10; // убираем пометку "выбрано" у одного
                                 Sel_X = Cell_X; // запоминаем
                                 Sel_Y = Cell_Y;
@@ -172,17 +168,17 @@ class GamePanel extends JPanel {
     }
 
     public int[][] AddBalls(int Matrix[][], int BallsCount) { // заполнение методом Монте-Карло :D
-        int x,y; // для хранения случайных координат
+        int x, y; // для хранения случайных координат
         int Color;
-        for (int i = 0; i < BallsCount ; i++) {
-            for (int j=0; j < 1000; j++) { // пока не поседеет
+        for (int i = 0; i < BallsCount; i++) {
+            for (int j = 0; j < 1000; j++) { // пока не поседеет
                 x = Rnd.nextInt(BoardSize);
                 y = Rnd.nextInt(BoardSize);
 
                 if (Matrix[x][y] == 0) { // если нашел пустую
-                    Color=Rnd.nextInt(7)+1; // рандомный цвет
+                    Color = Rnd.nextInt(7) + 1; // рандомный цвет
                     Matrix[x][y] = Color;
-                    Check(Matrix,x,y,InARowCount,Color);
+                    Check(Matrix, x, y, InARowCount, Color);
                     break;
                 }
             }
@@ -192,81 +188,54 @@ class GamePanel extends JPanel {
 
     public int[][] Check(int Matrix[][], int X, int Y, int InARowCount, int BallColor) { // Функция для проверки шаров при вставке
 
-        int Left=Y, Right=Y;
-        int Up=X, Down=X;
+        int Left = Y, Right = Y; // переменные для хранения границ удаления по горизонтали
+        int Up = X, Down = X;   // переменные для хранения границ удаления по вертикали
+        while (Right < BoardSize && Matrix[X][Right] == BallColor) Right++; // вправо
+        while (Left >= 0 && Matrix[X][Left] == BallColor) Left--; // влево
+        while (Down < BoardSize && Matrix[Down][Y] == BallColor) Down++; //вниз
+        while (Up >= 0 && Matrix[Up][Y] == BallColor) Up--; // вверх
 
-        while(Right<BoardSize && Matrix[X][Right]==BallColor)
-        {
-            Right++;
-        }
-        while(Left>=0 && Matrix[X][Left]==BallColor)
-        {
-            Left--;
-        }
-
-        while(Down<BoardSize && Matrix[Down][Y]==BallColor)
-        {
-            Down++;
-        }
-        while(Up>=0 && Matrix[Up][Y]==BallColor)
-        {
-            Up--;
-        }
-
-        int Ux1=X, Uy1=Y;
-        int Dx1=X, Dy1=Y;
-        while(Ux1>=0 && Uy1 >= 0 && Matrix[Ux1][Uy1]==BallColor){
+        int Ux1 = X, Uy1 = Y; // переменные для верхней левой границы
+        int Dx1 = X, Dy1 = Y; // переменные для нижней правой границы
+        while (Ux1 >= 0 && Uy1 >= 0 && Matrix[Ux1][Uy1] == BallColor) { // находим верхнюю левую
             Ux1--;
             Uy1--;
-
         }
-
-        while(Dx1<BoardSize && Dy1 <BoardSize && Matrix[Dx1][Dy1]==BallColor){
+        while (Dx1 < BoardSize && Dy1 < BoardSize && Matrix[Dx1][Dy1] == BallColor) { // находим нижнюю правую
             Dx1++;
             Dy1++;
-
         }
 
-        int Ux2=X, Uy2=Y;
-        int Dx2=X, Dy2=Y;
-        while(Uy2<BoardSize && Ux2 >= 0 && Matrix[Ux2][Uy2]==BallColor){
+        int Ux2 = X, Uy2 = Y; // переменные для верхней правой границы
+        int Dx2 = X, Dy2 = Y; // переменные для нижней левой границы
+        while (Uy2 < BoardSize && Ux2 >= 0 && Matrix[Ux2][Uy2] == BallColor) { // находим верхнюю правую
             Uy2++;
             Ux2--;
-
         }
-
-        while(Dx2<BoardSize && Dy2 >=0 && Matrix[Dx2][Dy2]==BallColor){
+        while (Dx2 < BoardSize && Dy2 >= 0 && Matrix[Dx2][Dy2] == BallColor) { // находим нижнюю левую
             Dx2++;
             Dy2--;
-
         }
 
-
-        if(Right-Left >=InARowCount+1) { // удаление "-"
-            for (int i=Left+1; i<Right; i++)
-                Matrix[X][i]=0;
+        /* Удаление элементов */
+        if (Right - Left >= InARowCount + 1) { // удаление "-"
+            for (int i = Left + 1; i < Right; i++)
+                Matrix[X][i] = 0;
         }
-
-        if(Down-Up >=InARowCount+1) { // удаление "|"
-            for (int i=Up+1; i<Down; i++)
-                Matrix[i][Y]=0;
+        if (Down - Up >= InARowCount + 1) {    // удаление "|"
+            for (int i = Up + 1; i < Down; i++)
+                Matrix[i][Y] = 0;
         }
-
-        if(Dx2-Ux2>=InARowCount+1){  // удаление "/"
-            for(int i=1; Ux2+i<Dx2;i++){
-                Matrix[Ux2+i][Uy2-i]=0;
+        if (Dx2 - Ux2 >= InARowCount + 1) {    // удаление "/"
+            for (int i = 1; Ux2 + i < Dx2; i++) {
+                Matrix[Ux2 + i][Uy2 - i] = 0;
             }
         }
-
-        if(Dx1-Ux1>=InARowCount+1){ // удаление "\"
-            for(int i=1; Ux1+i<Dx1;i++){
-                Matrix[Ux1+i][Uy1+i]=0;
+        if (Dx1 - Ux1 >= InARowCount + 1) {    // удаление "\"
+            for (int i = 1; Ux1 + i < Dx1; i++) {
+                Matrix[Ux1 + i][Uy1 + i] = 0;
             }
         }
-
-
-        System.out.println("U"+Ux1+" "+Uy1);
-        System.out.println("R" +Dx1+" "+Dy1);
 
         return Matrix;
     }
