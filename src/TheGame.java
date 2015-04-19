@@ -29,7 +29,7 @@ class GamePanel extends JPanel {
     private int Sel_X, Sel_Y; // координаты выбранного элемента
     private int State = 0; // состояние
     private int BallCount = 3; // количество выпадающих шаров
-    private int InARowCount = 5; // количество шаров в ряд
+    public int InARowCount = 5; // количество шаров в ряд
 
     Random Rnd = new Random();
 
@@ -60,7 +60,7 @@ class GamePanel extends JPanel {
                 Matrix[i][k] = 0;
             }
         }
-        Matrix = AddBalls(Matrix, BallCount);
+        AddBalls(BallCount);
 
         addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent e) {
@@ -83,9 +83,10 @@ class GamePanel extends JPanel {
                         if (Matrix[Cell_X][Cell_Y] == 0) { // если клик на пустую ячейку
                             Matrix[Cell_X][Cell_Y] = Matrix[Sel_X][Sel_Y] - 10; // копируем цвет
                             Matrix[Sel_X][Sel_Y] = 0; // опустошаем предыдущую ячейку
-                            Check(Matrix, Cell_X, Cell_Y, InARowCount, Matrix[Cell_X][Cell_Y]);
+                            Check(Matrix[Cell_X][Cell_Y]);
+                            if (State!=3)
+                            AddBalls(BallCount);
                             State = 0; // меняем состояние
-                            Matrix = AddBalls(Matrix, BallCount);
                         } else { // клик на непустую ячейку (меняем выбираемый элемент)
                             if (Sel_X == Cell_X && Sel_Y == Cell_Y) {// Если клик на ту же ячейку
                                 Matrix[Sel_X][Sel_Y] -= 10; // убираем пометку "выбрано"
@@ -167,36 +168,34 @@ class GamePanel extends JPanel {
         }
     }
 
-    public int[][] AddBalls(int Matrix[][], int BallsCount) { // заполнение методом Монте-Карло :D
-        int x, y; // для хранения случайных координат
+    void AddBalls(int BallsCount) { // заполнение методом Монте-Карло :D
         int Color;
         for (int i = 0; i < BallsCount; i++) {
             for (int j = 0; j < 1000; j++) { // пока не поседеет
-                x = Rnd.nextInt(BoardSize);
-                y = Rnd.nextInt(BoardSize);
+                Cell_X = Rnd.nextInt(BoardSize);
+                Cell_Y = Rnd.nextInt(BoardSize);
 
-                if (Matrix[x][y] == 0) { // если нашел пустую
+                if (Matrix[Cell_X][Cell_Y] == 0) { // если нашел пустую
                     Color = Rnd.nextInt(7) + 1; // рандомный цвет
-                    Matrix[x][y] = Color;
-                    Check(Matrix, x, y, InARowCount, Color);
+                    Matrix[Cell_X][Cell_Y] = Color;
+                    Check(Color);
                     break;
                 }
             }
         }
-        return Matrix;
     }
 
-    public int[][] Check(int Matrix[][], int X, int Y, int InARowCount, int BallColor) { // Функция для проверки шаров при вставке
+    void Check(int BallColor) { // Функция для проверки шаров при вставке
+        int Lft = Cell_Y, Rgt = Cell_Y; // переменные для хранения границ удаления по горизонтали
+        int Up = Cell_X, Dwn = Cell_X;   // переменные для хранения границ удаления по вертикали
 
-        int Left = Y, Right = Y; // переменные для хранения границ удаления по горизонтали
-        int Up = X, Down = X;   // переменные для хранения границ удаления по вертикали
-        while (Right < BoardSize && Matrix[X][Right] == BallColor) Right++; // вправо
-        while (Left >= 0 && Matrix[X][Left] == BallColor) Left--; // влево
-        while (Down < BoardSize && Matrix[Down][Y] == BallColor) Down++; //вниз
-        while (Up >= 0 && Matrix[Up][Y] == BallColor) Up--; // вверх
+        while (Rgt < BoardSize && Matrix[Cell_X][Rgt] == BallColor) Rgt++; // вправо
+        while (Lft >= 0 && Matrix[Cell_X][Lft] == BallColor) Lft--; // влево
+        while (Dwn < BoardSize && Matrix[Dwn][Cell_Y] == BallColor) Dwn++; //вниз
+        while (Up >= 0 && Matrix[Up][Cell_Y] == BallColor) Up--; // вверх
 
-        int Ux1 = X, Uy1 = Y; // переменные для верхней левой границы
-        int Dx1 = X, Dy1 = Y; // переменные для нижней правой границы
+        int Ux1 = Cell_X, Uy1 = Cell_Y; // переменные для верхней левой границы
+        int Dx1 = Cell_X, Dy1 = Cell_Y; // переменные для нижней правой границы
         while (Ux1 >= 0 && Uy1 >= 0 && Matrix[Ux1][Uy1] == BallColor) { // находим верхнюю левую
             Ux1--;
             Uy1--;
@@ -206,8 +205,8 @@ class GamePanel extends JPanel {
             Dy1++;
         }
 
-        int Ux2 = X, Uy2 = Y; // переменные для верхней правой границы
-        int Dx2 = X, Dy2 = Y; // переменные для нижней левой границы
+        int Ux2 = Cell_X, Uy2 = Cell_Y; // переменные для верхней правой границы
+        int Dx2 = Cell_X, Dy2 = Cell_Y; // переменные для нижней левой границы
         while (Uy2 < BoardSize && Ux2 >= 0 && Matrix[Ux2][Uy2] == BallColor) { // находим верхнюю правую
             Uy2++;
             Ux2--;
@@ -217,29 +216,34 @@ class GamePanel extends JPanel {
             Dy2--;
         }
 
+        Delete(Rgt,Lft,Dwn,Up,Dx1,Dx2,Ux1,Ux2,Uy2,Uy1);
+    }
+
+    void Delete(int Rgt, int Lft, int Dwn, int Up, int Dx1, int Dx2, int Ux1, int Ux2, int Uy2, int Uy1){
         /* Удаление элементов */
-        if (Right - Left >= InARowCount + 1) { // удаление "-"
-            for (int i = Left + 1; i < Right; i++)
-                Matrix[X][i] = 0;
+        if (Rgt - Lft >= InARowCount + 1) { // удаление "-"
+            State = 3;
+            for (int i = Lft + 1; i < Rgt; i++)
+                Matrix[Cell_X][i] = 0;
         }
-        if (Down - Up >= InARowCount + 1) {    // удаление "|"
-            for (int i = Up + 1; i < Down; i++)
-                Matrix[i][Y] = 0;
+        if (Dwn - Up >= InARowCount + 1) {    // удаление "|"
+            State = 3;
+            for (int i = Up + 1; i < Dwn; i++)
+                Matrix[i][Cell_Y] = 0;
         }
         if (Dx2 - Ux2 >= InARowCount + 1) {    // удаление "/"
+            State = 3;
             for (int i = 1; Ux2 + i < Dx2; i++) {
                 Matrix[Ux2 + i][Uy2 - i] = 0;
             }
         }
         if (Dx1 - Ux1 >= InARowCount + 1) {    // удаление "\"
+            State = 3;
             for (int i = 1; Ux1 + i < Dx1; i++) {
                 Matrix[Ux1 + i][Uy1 + i] = 0;
             }
         }
-
-        return Matrix;
     }
-
     /*
     public int[][] Path(int Matrix[][], int X, int Y, int X1, int Y1) { // Функция для нахождения пути
 
