@@ -52,7 +52,7 @@ public class GamePanel extends JPanel {
             public void mouseReleased(MouseEvent e) {
                 Cell_X = (e.getX() - Offset) / CellSize;
                 Cell_Y = (e.getY() - Offset) / CellSize;
-
+                if (Cell_X < BoardSize && Cell_Y < BoardSize) // если клик в пределах матрицы
                 switch (State) {
                     case 0: // клик без выбранного элемента
                         if (Matrix[Cell_X][Cell_Y] < 10) { // если элемент уже не выбран
@@ -98,8 +98,9 @@ public class GamePanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         DrawMatrix(g);
-        g.setFont(new Font("Noto Sans",Font.PLAIN, 15));
-        g.drawString("СЧЁТ = " + Score, 2 * Offset, WindowSize + 8);
+        g.setFont(new Font("Noto Sans", Font.PLAIN, 15));
+
+        g.drawString("Счёт - " + Score, 2 * Offset, WindowSize + 10);
     }
 
     public void DrawMatrix(Graphics g) {
