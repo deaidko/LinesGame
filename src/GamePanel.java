@@ -17,7 +17,7 @@ public class GamePanel extends JPanel {
     private int BallCount = 3; // количество выпадающих шаров
     public int InARowCount = 5; // количество шаров в ряд
     public int Ball[] = new int[BallCount];
-    public int IconSize = 25;
+    public int IconSize = 25; // размер иконок выпадающих шаров
 
     Random Rnd = new Random();
 
@@ -92,14 +92,14 @@ public class GamePanel extends JPanel {
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(WindowSize, WindowSize + 20);
+        return new Dimension(WindowSize, WindowSize + IconSize);
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        DrawMatrix(g);
-        g.setFont(new Font("Noto Sans", Font.PLAIN, 15));
-        g.drawString("Счёт - " + Score, 2 * Offset, WindowSize + 10);
+        DrawMatrix(g); // рисуем матрицу
+        g.setFont(new Font("Noto Sans", Font.PLAIN, 15)); // устанавливаем шрифт
+        g.drawString("Счёт - " + Score, 2 * Offset, WindowSize + 10); // выводим счёт
     }
 
     public void DrawMatrix(Graphics g) {
@@ -154,28 +154,28 @@ public class GamePanel extends JPanel {
                 }
             }
         }
-        for (int i = 0; i < BallCount; i++) {
+        for (int i = 0; i < BallCount; i++) { // рисуем иконки следующих шаров
             switch (Ball[i]) {
                 case 1:
-                    g.drawImage(red, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
+                    g.drawImage(red, WindowSize - 35 - i * IconSize, getHeight() - IconSize - Offset, IconSize, IconSize, this);
                     break;
                 case 2:
-                    g.drawImage(grn, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
+                    g.drawImage(grn, WindowSize - 35 - i * IconSize, getHeight() - IconSize - Offset, IconSize, IconSize, this);
                     break;
                 case 3:
-                    g.drawImage(blu, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
+                    g.drawImage(blu, WindowSize - 35 - i * IconSize, getHeight() - IconSize - Offset, IconSize, IconSize, this);
                     break;
                 case 4:
-                    g.drawImage(yel, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
+                    g.drawImage(yel, WindowSize - 35 - i * IconSize, getHeight() - IconSize - Offset, IconSize, IconSize, this);
                     break;
                 case 5:
-                    g.drawImage(pnk, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
+                    g.drawImage(pnk, WindowSize - 35 - i * IconSize, getHeight() - IconSize - Offset, IconSize, IconSize, this);
                     break;
                 case 6:
-                    g.drawImage(lbl, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
+                    g.drawImage(lbl, WindowSize - 35 - i * IconSize, getHeight() - IconSize - Offset, IconSize, IconSize, this);
                     break;
                 case 7:
-                    g.drawImage(drd, WindowSize - 35 - i * IconSize, getHeight() - IconSize - 3, IconSize, IconSize, this);
+                    g.drawImage(drd, WindowSize - 35 - i * IconSize, getHeight() - IconSize - Offset, IconSize, IconSize, this);
                     break;
             }
         }
@@ -191,33 +191,29 @@ public class GamePanel extends JPanel {
                 Cell_Y = Rnd.nextInt(BoardSize);
 
                 if (Matrix[Cell_X][Cell_Y] == 0) { // если нашел пустую
-                    //            Color = Rnd.nextInt(7) + 1; // рандомный цвет
-                    Color = Ball[Added];
+                    Color = Ball[Added]; // добавляем из ранее заготовленных
                     Matrix[Cell_X][Cell_Y] = Color;
-                    Added++;
-                    Check(Color);
+                    Added++; // количество добавленных
+                    Check(Color); // проверяем на N-в ряд
                     break;
                 }
             }
         }
 
-        for (int i = 0; i < BallCount; i++) {
+        for (int i = 0; i < BallCount; i++) { // генерируем новые цвета
             Ball[i] = Rnd.nextInt(7) + 1;
         }
 
-        if (Added < BallCount) {
-            CleanBoard();
-        }
         Added = 0;
         for (int i = 0; i < BoardSize; i++) {
             for (int j = 0; j < BoardSize; j++) {
                 if (Matrix[i][j] == 0)
-                    Added++;
+                    Added++; // считаем количество пустых
             }
         }
-        if (Added == 0) {
+        if (Added == 0) { // если пустых уже нет, конец игры
             JOptionPane.showMessageDialog(null, "Молодец! Ваш счёт " + Score + " очков!", "Игра окончена", JOptionPane.INFORMATION_MESSAGE);
-            CleanBoard();
+            CleanBoard(); // и очищаем поле
         }
     }
 
@@ -281,8 +277,8 @@ public class GamePanel extends JPanel {
         }
     }
 
-    public boolean PathExists(int xs, int ys, int xe, int ye) {
-        int NewMatrix[][] = new int[BoardSize + 2][BoardSize + 2];
+    public boolean PathExists(int xs, int ys, int xe, int ye) { // поиск пути
+        int NewMatrix[][] = new int[BoardSize + 2][BoardSize + 2]; // генерируем матрицу с граничными элементами
         for (int i = 0; i < BoardSize + 2; i++) {
             for (int j = 0; j < BoardSize + 2; j++) {
                 if (i > 0 && i < BoardSize + 1 && j > 0 && j < BoardSize + 1) {
@@ -290,33 +286,34 @@ public class GamePanel extends JPanel {
                 } else NewMatrix[i][j] = 1;
             }
         }
-        int cur = -1;
-        int near = 1;
 
-        NewMatrix[xs + 1][ys + 1] = cur;
-        NewMatrix[xe + 1][ye + 1] = 0;
+        int cur = -1; // текущий номер
+        int near = 1; // количество добавленных
 
-        while (near != 0) {
-            near = 0;
-            for (int i = 1; i < BoardSize + 1; i++) {
+        NewMatrix[xs + 1][ys + 1] = cur; // ставим метку на начало маршрута
+        NewMatrix[xe + 1][ye + 1] = 0;   // обнуляем конец
+
+        while (near != 0) { // пока есть пустые
+            near = 0; // обнуляем количество добавленных
+            for (int i = 1; i < BoardSize + 1; i++) { // цикл по всей матрице
                 for (int j = 1; j < BoardSize + 1; j++) {
                     if (NewMatrix[i][j] == cur) {
-                        if (NewMatrix[i + 1][j] == 0) {
+                        if (NewMatrix[i + 1][j] == 0) { // вправо
                             if (i + 1 == xe + 1 && j == ye + 1) return true;
                             NewMatrix[i + 1][j] = cur - 1;
                             near++;
                         }
-                        if (NewMatrix[i][j + 1] == 0) {
+                        if (NewMatrix[i][j + 1] == 0) { // вниз
                             if (i == xe + 1 && j + 1 == ye + 1) return true;
                             NewMatrix[i][j + 1] = cur - 1;
                             near++;
                         }
-                        if (NewMatrix[i - 1][j] == 0) {
+                        if (NewMatrix[i - 1][j] == 0) { // вверх
                             if (i - 1 == xe + 1 && j == ye + 1) return true;
                             NewMatrix[i - 1][j] = cur - 1;
                             near++;
                         }
-                        if (NewMatrix[i][j - 1] == 0) {
+                        if (NewMatrix[i][j - 1] == 0) { // влево
                             if (i == xe + 1 && j - 1 == ye + 1) return true;
                             NewMatrix[i][j - 1] = cur - 1;
                             near++;
@@ -324,12 +321,12 @@ public class GamePanel extends JPanel {
                     }
                 }
             }
-            cur--;
+            cur--; // следующий номер
         }
-        return false;
+        return false; // возвращаем false если не найден путь
     }
 
-    public void CleanBoard() {
+    public void CleanBoard() { // функция для очистки игрового поля и обнуления счета
         for (int i = 0; i < BoardSize; i++) {
             for (int k = 0; k < BoardSize; k++) {
                 Matrix[i][k] = 0;
@@ -337,6 +334,6 @@ public class GamePanel extends JPanel {
         }
         State = 0;
         Score = 0;
-        AddBalls();
+        AddBalls(); // добавляем шары
     }
 }
